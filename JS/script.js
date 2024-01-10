@@ -131,6 +131,7 @@ function buyWeapon() {
       let newWeapon = weapons[currentWeapon].name;
       inventory.push(newWeapon);
       let inventoryString = inventory.join(' , ');
+      console.log(inventoryString);
       text.innerText = `You now have a ${newWeapon}.In your inventory you have: ${inventoryString}`;
     } else {
       text.innerText = 'You do not have enough gold to buy a weapon.';
@@ -147,8 +148,8 @@ function sellWeapon() {
     gold += 15;
     goldText.innerText = gold;
     let currentWeapon = inventory.shift();
-    let inventoryString;
-    text.innerText = `You sold ${currentWeapon}.In your inventory you have: ${inventoryString}`;
+    let inventoryString = inventory.join(' , ');
+    text.innerText = `You sold ${currentWeapon}. In your inventory you have: ${inventoryString}`;
   } else text.innerText = "Don't sell your only weapon!";
 }
 
