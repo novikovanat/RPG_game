@@ -131,7 +131,6 @@ function buyWeapon() {
       let newWeapon = weapons[currentWeapon].name;
       inventory.push(newWeapon);
       let inventoryString = inventory.join(' , ');
-      console.log(inventoryString);
       text.innerText = `You now have a ${newWeapon}.In your inventory you have: ${inventoryString}`;
     } else {
       text.innerText = 'You do not have enough gold to buy a weapon.';
@@ -197,9 +196,7 @@ function attack() {
 }
 
 function getMonsterAttackValue(level) {
-  console.log(level);
   const hit = level * 5 - Math.floor(Math.random() * xp);
-  console.log(hit);
   return hit > 0 ? hit : 0;
 }
 
