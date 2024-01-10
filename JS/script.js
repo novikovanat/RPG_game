@@ -27,7 +27,7 @@ const weapons = [
 const locations = [
   {
     name: 'town square',
-    'button text': ['Go to store', 'Go to cave', 'Fight dragon'],
+    'button text': ['Go to a store', 'Go to cave', 'Fight dragon'],
     'button functions': [goStore, goCave, fightDragon],
     text: 'You are in the town square. You see a sign that says "Store"',
   },
@@ -55,12 +55,8 @@ const locations = [
   },
   {
     name: 'kill monster',
-    'button text': [
-      'Go to town square',
-      'Go to town square',
-      'Go to town square',
-    ],
-    'button functions': [goTown, goTown, goTown],
+    'button text': ['Go to town square', 'Go to town square', 'Go to a store'],
+    'button functions': [goTown, easterEgg, goStore],
     text: 'The monster screams "Arg!" as it dies. You gain experience points and find gold.',
   },
   {
@@ -74,6 +70,12 @@ const locations = [
     'button text': ['REPLAY?', 'REPLAY?', 'REPLAY?'],
     'button functions': [restart, restart, restart],
     text: 'You defeat the dragon! YOU WIN THE GAME! 🎉',
+  },
+  {
+    name: 'easter egg',
+    'button text': ['2', '8', 'Go to town square?'],
+    'button functions': [pickTwo, pickEight, goTown],
+    text: 'You find a secret game. Pick a number above. Ten numbers will be randomly chosen between 0 and 10. If the number you choose matches one of the random numbers, you win!',
   },
 ];
 
@@ -173,10 +175,13 @@ function fightDragon() {
 
 function attack() {
   text.innerText = `The ${monsters[fighting].name} attacks. You attack it with your ${weapons[currentWeapon].name}.`;
-  health -= monsters[fighting].level;
-  console.log(monsterHealth);
-  monsterHealth -=
-    weapons[currentWeapon].power + Math.floor(Math.random() * xp) + 1;
+  health -= getMonsterAttackValue(monsters[fighting].level);
+  if (isMonsterHit()) {
+    monsterHealth -=
+      weapons[currentWeapon].power + Math.floor(Math.random() * xp) + 1;
+  } else {
+    text.innerText += ' You miss.';
+  }
   healthText.innerText = health;
   monsterHealthText.innerText = monsterHealth;
   if (health <= 0) {
@@ -184,6 +189,21 @@ function attack() {
   } else if (monsterHealth <= 0) {
     fighting === 2 ? winGame() : defeatMonster();
   }
+  if (Math.random() <= 0.1 && inventory.length !== 1) {
+    text.innerText += `Your ${inventory.pop()} breaks.`;
+    currentWeapon--;
+  }
+}
+
+function getMonsterAttackValue(level) {
+  console.log(level);
+  const hit = level * 5 - Math.floor(Math.random() * xp);
+  console.log(hit);
+  return hit > 0 ? hit : 0;
+}
+
+function isMonsterHit() {
+  return Math.random() > 0.2 || health < 20;
 }
 
 function dodge() {
@@ -215,4 +235,38 @@ function restart() {
   healthText.innerText = health;
   goldText.innerText = gold;
   goTown();
+}
+
+function easterEgg() {
+  update(locations[7]);
+}
+
+function pick(guess) {
+  const numbers = [];
+  while (numbers.length < 10) {
+    numbers.push(Math.floor(Math.random() * 11));
+  }
+  text.innerText = `You picked ${guess}. Here are the random numbers:`;
+  for (let i = 0; i < 10; i++) {
+    text.innerText += numbers[i] + '\n';
+  }
+  if (numbers.indexOf(guess) !== -1) {
+    text.innerText += 'Right! You win 20 gold!';
+    gold += 20;
+    goldText.innerText = gold;
+  } else {
+    text.innerText += 'Wrong! You lose 10 health!';
+    health -= 10;
+    healthText.innerText = health;
+    if (health <= 0) {
+      lose();
+    }
+  }
+}
+
+function pickTwo() {
+  pick(2);
+}
+function pickEight() {
+  pick(8);
 }
